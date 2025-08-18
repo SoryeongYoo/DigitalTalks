@@ -14,6 +14,7 @@ from components import (
     blur_block, firebase_kpi_table
 )
 from charts import create_split_charts, create_combined_chart
+from firebase_config import db
 
 
 def setup_sidebar():
