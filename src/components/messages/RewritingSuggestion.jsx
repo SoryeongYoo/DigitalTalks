@@ -52,7 +52,7 @@ const RewritingSuggestion = ({
             gap: '8px',
             marginBottom: '12px'
           }}>
-            <span style={{ fontSize: '16px' }}>✨</span>
+            <img src='./logo.png' style={{ fontSize: '16px' }} />
             <span style={{ fontSize: '14px', fontWeight: '600', color: '#374151' }}>
               더 나은 표현
             </span>
