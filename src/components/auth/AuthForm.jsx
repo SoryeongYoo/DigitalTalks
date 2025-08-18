@@ -85,7 +85,7 @@ export const AuthForm = ({ type, onSwitchMode }) => {
         await setDoc(doc(db, 'users', userCredential.user.uid), {
           username: username,
           email: email,
-          profileImage: 'https://cdn-icons-png.flaticon.com/512/847/847969.png/default_profile.png', // 기본 프로필 이미지
+          profileImage: 'https://cdn-icons-png.flaticon.com/512/847/847969.png', // 기본 프로필 이미지
           createdAt: new Date()
         });
 
