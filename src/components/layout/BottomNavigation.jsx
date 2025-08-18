@@ -10,17 +10,17 @@ export const BottomNavigation = () => {
   const { logout } = useAuth();
   const navigate = useNavigate();
 
-  return(
+  return (
     <nav className={styles.sidebar}>
       <div className={styles.container}>
         <button onClick={() => { navigate('/'); console.log('Navigating to home'); }}>
-          <img 
-          src="/img/instagram_text.png"
-          alt="Instagram Logo"
-          className={styles.logo}
+          <img
+            src="/img/instagram_text.png"
+            alt="Instagram Logo"
+            className={styles.logo}
           />
         </button>
-        <button 
+        <button
           className={`${styles.navButton} ${styles.active}`}
           onClick={() => navigate('/')}
         >
@@ -46,7 +46,7 @@ export const BottomNavigation = () => {
           <span className={styles.label}>릴스</span>
         </button>
         <button
-          onClick={() => navigate('/dm')} 
+          onClick={() => navigate('/dm')}
           className={styles.navButton}>
           <Send className={styles.icon} />
           <span className={styles.label}>메세지</span>
@@ -59,11 +59,17 @@ export const BottomNavigation = () => {
           <Heart className={styles.icon} />
           <span className={styles.label}>알림</span>
         </button>
-        <button className={styles.navButton}>
-          <User className={styles.icon} />
-          <span className={styles.label}>사용자 대시보드</span>
-        </button>
-        <button 
+        <a
+          href="https://digitaltalks-userreport.streamlit.app/"
+          target="_blank"
+          rel="noopener noreferrer"
+        >
+          <button className={styles.navButton}>
+            <User className={styles.icon} />
+            <span className={styles.label}>사용자 대시보드</span>
+          </button>
+        </a>
+        <button
           onClick={logout}
           className={styles.navButton}
         >
