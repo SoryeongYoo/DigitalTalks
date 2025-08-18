@@ -1,0 +1,496 @@
+/* ===== Layout ===== */
+.fullPageWrapper {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #fafafa;
+    min-height: 100vh;
+    padding: 24px;
+    box-sizing: border-box;
+}
+
+/* 패널 높이 고정해서 내부만 스크롤되게 + 너비 확장 */
+.panel {
+    height: 88vh;            /* max-height → height 로 고정 */
+    width: 50vw;             /* 화면 너비의 50% */
+    max-width: 800px;        /* 최대 너비 800px */
+    min-width: 400px;        /* 최소 너비 400px */
+    overflow: hidden;        /* 그대로 OK */
+    margin: 0 auto;          /* 가운데 정렬 강제 */
+    position: relative;      /* 위치 고정 */
+    background: #fff;        /* 배경색 추가 */
+    border-radius: 12px;     /* 둥근 모서리 */
+    box-shadow: 0 4px 12px rgba(0,0,0,0.1); /* 그림자 */
+}
+
+/* 스크롤 영역의 조상 flex 컨테이너들은 줄어들 수 있어야 함 */
+.panel,
+.messageListContainer,
+.chatContainer {
+    min-height: 0;           /* ★ 중요: 자식 overflow 동작 허용 */
+    display: flex;
+    flex-direction: column;
+}
+
+/* 리스트/채팅 본문은 스크롤 맡기기 */
+.messageList,
+.chatMessages {
+    flex: 1 1 0;             /* grow/shrink 허용 + 0 기준 */
+    min-height: 0;           /* ★ 중요 */
+    overflow-y: auto;
+}
+
+/* (옵션) 입력창이 너무 커지지 않게 보장 */
+.messageInput {
+    max-height: 100px;       /* 이미 있으니 유지 */
+    overflow-y: auto;
+}
+
+/* ===== List (left) ===== */
+.messageListContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid #efefef;
+    background: #fff;
+}
+
+.headerLeft {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.backButton {
+    background: transparent;
+    border: 0;
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.backButton:hover {
+    background: #f6f6f6;
+}
+
+.headerTitle {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 700;
+    color: #262626;
+}
+
+.subHeader {
+    padding: 10px 14px 6px;
+}
+
+.subHeader h3 {
+    margin: 0 0 8px;
+    font-size: 13px;
+    color: #8e8e8e;
+    font-weight: 600;
+}
+
+.inlineNewChat {
+    display: flex;
+    gap: 8px;
+}
+
+.messageList {
+    flex: 1;
+    overflow-y: auto;
+}
+
+/* ===== Empty state ===== */
+.emptyState {
+    height: 100%;
+    padding: 48px 20px;
+    display: flex;
+    flex-direction: column-reverse;  /* 순서를 뒤집어서 newChatForm이 위로 */
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 24px;                       /* 간격을 늘려서 더 깔끔하게 */
+}
+
+.emptyIcon {
+    width: 72px;
+    height: 72px;
+    color: #c7c7c7;
+    stroke-width: 1;
+}
+
+.emptyState h3 {
+    margin: 6px 0 2px;
+    font-weight: 700;
+    color: #262626;
+}
+
+.emptyState p {
+    margin: 0 0 10px;
+    font-size: 13px;
+    color: #8e8e8e;
+}
+
+.newChatForm {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    margin-top: 0;               /* 기존 margin-top 제거 */
+    margin-bottom: 16px;         /* 아래쪽 마진 추가 */
+    padding: 8px;
+    border-bottom: 1px solid #dbdbdb;
+    order: -1;                   /* 가장 위로 이동 */
+}
+
+/* ===== Inputs / Buttons (override your shared components) ===== */
+.searchInput,
+.messageInput {
+    border: 1px solid #e5e5e5 !important;
+    background: #fafafa !important;
+    border-radius: 16px !important;    /* 더 둥글게 */
+    padding: 14px 18px !important;     /* 패딩 증가 */
+    font-size: 15px !important;        /* 폰트 크기 증가 */
+    transition: all 0.2s ease;         /* 부드러운 전환 */
+}
+
+.searchInput:focus,
+.messageInput:focus {
+    border-color: #0095f6 !important;  /* 포커스 시 인스타 블루 */
+    background: #fff !important;
+    box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.1) !important; /* 포커스 효과 */
+    outline: none !important;
+}
+
+.newChatButton {
+    background: #0095f6;
+    color: #fff;
+    border: 0;
+    border-radius: 10px;
+    padding: 10px 14px;
+    font-weight: 700;
+    font-size: 14px;
+    cursor: pointer;
+    width: 80px;
+    height: 42px;
+}
+
+.newChatButton:disabled {
+    background: #b3d9ff;
+    cursor: not-allowed;
+}
+
+.newChatButton:hover:not(:disabled) {
+    background: #007ad8;
+}
+
+/* ===== Chat view ===== */
+.chatContainer {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.chatHeader {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 14px;
+    border-bottom: 1px solid #efefef;
+    background: #fff;
+}
+
+.chatHeaderLeft {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.chatBackButton {
+    background: transparent;
+    border: 0;
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.chatBackButton:hover {
+    background: #f6f6f6;
+}
+
+.chatAvatar {
+    width: 32px;
+    height: 32px;
+}
+
+.chatUsername {
+    font-size: 15px;
+    font-weight: 700;
+    color: #262626;
+}
+
+.chatHeaderRight {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.iconButton {
+    background: transparent;
+    border: 0;
+    padding: 6px;
+    border-radius: 8px;
+    cursor: pointer;
+}
+
+.iconButton:hover {
+    background: #f6f6f6;
+}
+
+.chatMessages {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 12px 8px;
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+    background: #fff;
+}
+
+.chatEmptyState {
+    height: 100%;
+    padding: 28px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+    gap: 8px;
+}
+
+.chatEmptyState h3 {
+    margin: 6px 0 2px;
+    font-weight: 700;
+    color: #262626;
+}
+
+.chatEmptyState p {
+    margin: 0;
+    font-size: 13px;
+    color: #8e8e8e;
+}
+
+/* Input row at bottom */
+.chatInputContainer {
+    padding: 18px 24px;      /* 화면 크기에 맞춘 패딩 */
+    border-top: 1px solid #efefef;
+    background: #fff;
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;           /* 플렉스 추가 */
+    justify-content: center; /* 가운데 정렬 */
+}
+
+.inputWrapper {
+    display: flex;
+    align-items: center;     /* flex-end에서 center로 변경 - 입력창과 버튼 세로 가운데 정렬 */
+    gap: 14px;               /* 50vw에 맞춘 적절한 간격 */
+    width: 100%;             /* 전체 너비 사용 */
+    max-width: 700px;        /* 최대 너비 제한으로 너무 넓어지지 않게 */
+    margin: 0 auto;          /* 추가 가운데 정렬 */
+}
+
+.messageInput {
+    flex: 1;
+    min-height: 46px;        /* 50vw에 맞춘 높이 */
+    max-height: 120px;       
+    padding: 14px 18px !important;  /* 50vw에 맞춘 패딩 */
+    font-size: 15px !important;     /* 50vw에 맞춘 폰트 */
+    line-height: 1.4;
+    resize: none;
+    border: 1px solid #dbdbdb !important;
+    border-radius: 18px !important;  /* 50vw에 맞춘 둥근 모서리 */
+    background: #fff !important;
+    box-sizing: border-box;
+    width: 600px;
+}
+
+.messageInput:focus {
+    border-color: #0095f6 !important;
+    box-shadow: 0 0 0 2px rgba(0, 149, 246, 0.1) !important;
+    outline: none !important;
+}
+
+.sendButton {
+    background: #0095f6;
+    color: #fff;
+    font-weight: 700;
+    padding: 13px 18px;      /* 50vw에 맞춘 패딩 */
+    border-radius: 18px;     /* 50vw에 맞춘 둥근 모서리 */
+    border: 0;
+    cursor: pointer;
+    opacity: 1;
+    font-size: 15px;         /* 50vw에 맞춘 폰트 */
+    min-height: 46px;        /* 입력창과 동일한 높이 */
+    min-width: 75px;         /* 50vw에 맞춘 너비 */
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+    flex-shrink: 0;          /* 버튼 크기 고정 */
+    align-self: center;      /* 버튼 자체를 세로 가운데 정렬 */
+}
+
+.sendButton:hover:not(:disabled) {
+    background: #007ad8;
+}
+
+.sendButton:disabled {
+    background: #b3d9ff;
+    cursor: not-allowed;
+    opacity: 0.6;
+}
+
+.sendButtonActive {
+    opacity: 1;
+}
+
+.sendButton:hover:not(:disabled) {
+    background: #eff6ff;
+}
+
+.sendButton:disabled {
+    cursor: not-allowed;
+}
+
+/* Scrollbars */
+.messageList::-webkit-scrollbar,
+.chatMessages::-webkit-scrollbar {
+    width: 6px;
+}
+
+.messageList::-webkit-scrollbar-thumb,
+.chatMessages::-webkit-scrollbar-thumb {
+    background: #d3d3d3;
+    border-radius: 3px;
+}
+
+.messageList::-webkit-scrollbar-thumb:hover,
+.chatMessages::-webkit-scrollbar-thumb:hover {
+    background: #bdbdbd;
+}
+
+/* Responsive */
+@media (max-width: 1024px) {
+    .panel {
+        width: 65vw;         /* 1024px 이하에서 조금 더 넓게 */
+        min-width: 500px;
+    }
+    
+    .chatInputContainer {
+        padding: 16px 20px;
+    }
+    
+    .inputWrapper {
+        max-width: 500px;    /* 중간 화면에서 최대 너비 조정 */
+    }
+    
+    .messageInput {
+        font-size: 14px !important;
+        padding: 12px 16px !important;
+        min-height: 44px;
+        border-radius: 16px !important;
+    }
+    
+    .sendButton {
+        padding: 12px 16px;
+        font-size: 14px;
+        min-height: 44px;
+        min-width: 70px;
+        border-radius: 16px;
+    }
+}
+
+@media (max-width: 768px) {
+    .panel {
+        width: 85vw;         /* 태블릿에서 더 넓게 */
+        min-width: 400px;
+    }
+    
+    .chatInputContainer {
+        padding: 14px 18px;
+    }
+    
+    .inputWrapper {
+        gap: 12px;
+        max-width: 450px;    /* 태블릿에서 최대 너비 조정 */
+    }
+    
+    .messageInput {
+        font-size: 14px !important;
+        padding: 12px 15px !important;
+        min-height: 42px;
+        border-radius: 15px !important;
+    }
+    
+    .sendButton {
+        padding: 11px 15px;
+        font-size: 14px;
+        min-height: 42px;
+        min-width: 65px;
+        border-radius: 15px;
+    }
+}
+
+@media (max-width: 520px) {
+    .panel {
+        width: 95vw;         /* 모바일에서 거의 전체 너비 */
+        max-height: 95vh;    /* 모바일에서 높이도 조정 */
+        min-width: 300px;
+        margin: 0;           /* 모바일에서는 마진 제거 */
+    }
+
+    .fullPageWrapper {
+        padding: 12px;       /* 모바일에서 패딩 줄임 */
+    }
+    
+    .chatInputContainer {
+        padding: 12px 16px;
+    }
+    
+    .inputWrapper {
+        gap: 10px;
+        max-width: 100%;     /* 모바일에서는 전체 너비 사용 */
+        margin: 0;           /* 모바일에서는 마진 제거 */
+    }
+    
+    .messageInput {
+        font-size: 14px !important;
+        padding: 11px 14px !important;
+        min-height: 40px;
+        border-radius: 14px !important;
+    }
+    
+    .sendButton {
+        padding: 10px 14px;
+        font-size: 14px;
+        min-height: 40px;
+        min-width: 60px;
+        border-radius: 14px;
+    }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+

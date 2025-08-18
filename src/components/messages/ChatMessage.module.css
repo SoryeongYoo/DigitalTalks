@@ -1,0 +1,84 @@
+ChatMessage.module.css
+.messageWrapper {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 8px;
+  max-width: 70%;
+}
+
+.messageWrapper.own {
+  align-self: flex-end;
+  align-items: flex-end;
+}
+
+.messageWrapper.other {
+  align-self: flex-start;
+  align-items: flex-start;
+}
+
+.messageBubble {
+  padding: 8px 16px;
+  border-radius: 18px;
+  word-wrap: break-word;
+  max-width: 100%;
+  position: relative;
+}
+
+.ownBubble {
+  background: #0095f6;
+  color: white;
+  border-bottom-right-radius: 4px;
+}
+
+.otherBubble {
+  background: #efefef;
+  color: #262626;
+  border-bottom-left-radius: 4px;
+}
+
+.messageText {
+  margin: 0;
+  font-size: 14px;
+  line-height: 1.4;
+  white-space: pre-wrap;
+}
+
+.messageTime {
+  margin-top: 4px;
+  opacity: 0;
+  transition: opacity 0.2s;
+}
+
+.messageWrapper:hover .messageTime {
+  opacity: 1;
+}
+
+.timestamp {
+  font-size: 11px;
+  color: #8e8e8e;
+}
+
+/* 반응형 디자인 */
+@media (max-width: 768px) {
+  .messageWrapper {
+    max-width: 85%;
+  }
+
+  .messageBubble {
+    padding: 8px 14px;
+  }
+
+  .messageText {
+    font-size: 13px;
+  }
+}
+
+@media (max-width: 480px) {
+  .messageWrapper {
+    max-width: 90%;
+  }
+
+  .messageBubble {
+    padding: 7px 12px;
+  }
+}

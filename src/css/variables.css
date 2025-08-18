@@ -1,0 +1,48 @@
+:root {
+  /* Colors */
+  --ig-primary-blue: #0095f6;
+  --ig-primary-blue-hover: #1877f2;
+  --ig-secondary-blue: #00376b;
+  --ig-red: #ed4956;
+  --ig-orange: #fd5949;
+  --ig-yellow: #fccc63;
+  --ig-purple: #8a3ab9;
+  
+  /* Grays */
+  --ig-gray-100: #fafafa;
+  --ig-gray-200: #f5f5f5;
+  --ig-gray-300: #efefef;
+  --ig-gray-400: #dbdbdb;
+  --ig-gray-500: #c7c7c7;
+  --ig-gray-600: #8e8e8e;
+  --ig-gray-900: #262626;
+  
+  /* Typography */
+  --ig-font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
+    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue', sans-serif;
+  
+  /* Spacing */
+  --ig-space-xs: 4px;
+  --ig-space-sm: 8px;
+  --ig-space-md: 12px;
+  --ig-space-lg: 16px;
+  --ig-space-xl: 24px;
+  --ig-space-2xl: 32px;
+  
+  /* Border Radius */
+  --ig-radius-sm: 6px;
+  --ig-radius-md: 8px;
+  --ig-radius-lg: 12px;
+  --ig-radius-full: 50%;
+  
+  /* Shadows */
+  --ig-shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.1);
+  --ig-shadow-md: 0 4px 6px rgba(0, 0, 0, 0.1);
+  --ig-shadow-lg: 0 20px 25px -5px rgba(0, 0, 0, 0.1),
+                  0 10px 10px -5px rgba(0, 0, 0, 0.04);
+  
+  /* Transitions */
+  --ig-transition-fast: 0.1s ease;
+  --ig-transition-normal: 0.2s ease;
+  --ig-transition-slow: 0.3s ease;
+}

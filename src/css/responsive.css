@@ -1,0 +1,33 @@
+/* Mobile First - Base styles for mobile */
+@media (max-width: 480px) {
+  .container {
+    padding: 12px;
+  }
+  
+  .modal {
+    margin: 8px;
+    max-height: 90vh;
+  }
+  
+  .formCard {
+    padding: 24px;
+  }
+}
+
+/* Tablet */
+@media (min-width: 481px) and (max-width: 768px) {
+  .container {
+    max-width: 600px;
+  }
+}
+
+/* Desktop */
+@media (min-width: 769px) {
+  .container {
+    max-width: 935px;
+  }
+  
+  .content {
+    max-width: 614px;
+  }
+}

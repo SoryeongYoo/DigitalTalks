@@ -1,0 +1,254 @@
+/* src/components/messages/RewritingSuggestion.module.css */
+
+.suggestionContainer {
+  position: relative;
+  margin-bottom: 8px;
+  background: #f8f9ff;
+  border: 1px solid #e1e5ff;
+  border-radius: 12px;
+  padding: 12px;
+  animation: slideDown 0.3s ease-out;
+}
+
+@keyframes slideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-10px);
+    max-height: 0;
+    padding-top: 0;
+    padding-bottom: 0;
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+    max-height: 200px;
+    padding-top: 12px;
+    padding-bottom: 12px;
+  }
+}
+
+/* Loading State */
+.loadingContainer {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+}
+
+.loadingSpinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid #e1e5ff;
+  border-top: 2px solid #0095f6;
+  border-radius: 50%;
+  animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+.loadingText {
+  font-size: 12px;
+  color: #666;
+  font-style: italic;
+}
+
+/* Suggestion Content */
+.suggestionContent {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.suggestionHeader {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  margin-bottom: 4px;
+}
+
+.suggestionIcon {
+  font-size: 14px;
+}
+
+.suggestionTitle {
+  font-size: 12px;
+  font-weight: 600;
+  color: #0095f6;
+}
+
+/* Text Comparison */
+.textComparison {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.originalText,
+.suggestedText {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.label {
+  font-size: 10px;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.originalText .label {
+  color: #666;
+}
+
+.suggestedText .label {
+  color: #0095f6;
+}
+
+.text {
+  font-size: 13px;
+  line-height: 1.4;
+  padding: 6px 8px;
+  border-radius: 6px;
+  word-wrap: break-word;
+}
+
+.originalText .text {
+  background: #f5f5f5;
+  color: #666;
+  border-left: 3px solid #ddd;
+}
+
+.suggestedText .text {
+  background: #fff;
+  color: #262626;
+  border-left: 3px solid #0095f6;
+  border: 1px solid #e1e5ff;
+}
+
+/* Action Buttons */
+.actionButtons {
+  display: flex;
+  gap: 8px;
+  justify-content: flex-end;
+  margin-top: 4px;
+}
+
+.applyButton,
+.dismissButton {
+  font-size: 12px !important;
+  padding: 6px 12px !important;
+  border-radius: 6px !important;
+  font-weight: 600 !important;
+  transition: all 0.2s ease !important;
+}
+
+.applyButton {
+  background: #0095f6 !important;
+  color: #fff !important;
+  border: 0 !important;
+}
+
+.applyButton:hover {
+  background: #007ad8 !important;
+  transform: translateY(-1px);
+}
+
+.dismissButton {
+  background: transparent !important;
+  color: #666 !important;
+  border: 1px solid #ddd !important;
+}
+
+.dismissButton:hover {
+  background: #f5f5f5 !important;
+  border-color: #999 !important;
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+  .textComparison {
+    gap: 6px;
+  }
+  
+  .text {
+    font-size: 12px;
+    padding: 4px 6px;
+  }
+  
+  .actionButtons {
+    gap: 6px;
+  }
+  
+  .applyButton,
+  .dismissButton {
+    font-size: 11px !important;
+    padding: 4px 8px !important;
+  }
+}
+
+/* Dark mode support */
+@media (prefers-color-scheme: dark) {
+  .suggestionContainer {
+    background: #1a1a2e;
+    border-color: #16213e;
+  }
+  
+  .loadingText {
+    color: #999;
+  }
+  
+  .suggestionTitle {
+    color: #4fc3f7;
+  }
+  
+  .originalText .text {
+    background: #2a2a2a;
+    color: #999;
+    border-left-color: #555;
+  }
+  
+  .suggestedText .text {
+    background: #2a2a2a;
+    color: #fff;
+    border-color: #16213e;
+    border-left-color: #4fc3f7;
+  }
+  
+  .applyButton {
+    background: #4fc3f7 !important;
+  }
+  
+  .applyButton:hover {
+    background: #29b6f6 !important;
+  }
+  
+  .dismissButton {
+    color: #999 !important;
+    border-color: #555 !important;
+  }
+  
+  .dismissButton:hover {
+    background: #333 !important;
+    border-color: #777 !important;
+  }
+}
+
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}

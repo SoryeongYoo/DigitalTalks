@@ -1,0 +1,245 @@
+/* ===== Base ===== */
+* {
+  box-sizing: border-box;
+}
+
+.backdrop {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.25);
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  /* z-index: 50; */
+  padding: 16px;
+}
+
+.sheet {
+  width: 100%;
+  max-width: 680px;
+  background: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 12px;
+  box-shadow: 0 12px 24px rgba(0, 0, 0, 0.12);
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  max-height: 90vh;
+}
+
+/* ===== Header (sticky) ===== */
+.header {
+  position: sticky;
+  top: 0;
+  z-index: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 56px;
+  border-bottom: 1px solid #efefef;
+  background: #fff;
+}
+
+.title {
+  font-size: 16px;
+  font-weight: 700;
+}
+
+/* 닫기 버튼 완전 리셋 + 우상단 고정 */
+.close {
+  all: unset;
+  /* 전역 button 스타일 무시 */
+  position: absolute;
+  right: 12px;
+  top: 8px;
+  width: 32px;
+  height: 32px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 9999px;
+  cursor: pointer;
+  color: #262626;
+}
+
+.close:hover {
+  background: rgba(0, 0, 0, 0.06);
+}
+
+.close:active {
+  transform: scale(0.96);
+}
+
+.close:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 2px #0095f6 inset;
+}
+
+.close svg {
+  width: 22px;
+  height: 22px;
+  display: block;
+}
+
+/* ===== List ===== */
+.list {
+  overflow-y: auto;
+  padding: 8px 16px 0;
+  max-height: calc(90vh - 140px);
+}
+
+.empty {
+  padding: 48px 0;
+  text-align: center;
+  color: #9e9e9e;
+  font-size: 14px;
+}
+
+/* ===== Comment item ===== */
+.item {
+  display: flex;
+  align-items: flex-start;
+  gap: 12px;
+  padding: 12px 0;
+  border-bottom: 1px solid #f2f2f2;
+}
+
+.avatar,
+.avatarFallback {
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  flex-shrink: 0;
+  background: #eee;
+  object-fit: cover;
+  display: inline-block;
+}
+
+.avatarFallback {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-weight: 700;
+  color: #777;
+}
+
+.body {
+  flex: 1;
+  min-width: 0;
+}
+
+/* 한 줄: 닉네임 + 본문 */
+.line {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  flex-wrap: wrap;
+  word-break: break-word;
+}
+
+.name {
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.text {
+  color: #262626;
+  line-height: 1.4;
+}
+
+/* 메타: 시간/삭제 */
+.meta {
+  margin-top: 6px;
+  font-size: 12px;
+  color: #8e8e8e;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+}
+
+.time {
+  color: #8e8e8e;
+}
+
+.delete {
+  border: 0;
+  background: transparent;
+  color: #8e8e8e;
+  cursor: pointer;
+}
+
+.delete:hover {
+  color: #262626;
+}
+
+/* ===== Input (sticky bottom) ===== */
+.inputRow {
+  position: sticky;
+  bottom: 0;
+  background: #fff;
+  display: flex;
+  gap: 10px;
+  align-items: center;
+  padding: 12px;
+  border-top: 1px solid #efefef;
+}
+
+.inputWrap {
+  flex: 1;
+  background: #fafafa;
+  border: 1px solid #e6e6e6;
+  border-radius: 9999px;
+  padding: 10px 14px;
+}
+
+.input {
+  width: 100%;
+  border: 0;
+  background: transparent;
+  outline: none;
+  font-size: 14px;
+}
+
+.postBtn {
+  border: 0;
+  background: transparent;
+  color: #0095f6;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+.postBtn:disabled {
+  color: #b3dffc;
+  cursor: default;
+}
+
+/* ===== Responsive ===== */
+@media (max-width: 1024px) {
+  .sheet {
+    max-width: 540px;
+  }
+}
+
+@media (max-width: 768px) {
+  .sheet {
+    max-width: 480px;
+  }
+}
+
+@media (max-width: 480px) {
+  .backdrop {
+    align-items: flex-end;
+  }
+
+  .sheet {
+    max-width: 100%;
+    width: 100%;
+    border-radius: 12px 12px 0 0;
+    border-left: 0;
+    border-right: 0;
+  }
+
+  .list {
+    max-height: 55vh;
+  }
+}

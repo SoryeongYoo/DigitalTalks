@@ -1,0 +1,95 @@
+/* Post.module.css (responsive) */
+
+.post {
+  width: 100%;
+  max-width: 680px;              /* 데스크톱 상한 */
+  margin: 16px auto 24px;        /* 가운데 정렬 */
+  background-color: #fff;
+  border: 1px solid #dbdbdb;
+  border-radius: 12px;
+  box-shadow: 0 1px 3px rgba(0,0,0,0.1);
+}
+
+/* 자유 비율 (이미지 원본 비율 유지) */
+.imageContainer {
+  width: 100%;
+  max-height: 680px;             /* 최대 높이 제한 */
+  overflow: hidden;
+  background: #000;              /* 검은색 배경으로 빈 공간 채움 */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.image {
+  width: 100%;
+  height: 100%;
+  object-fit: contain;           /* cover → contain으로 변경 (이미지 전체 보이게) */
+  display: block;
+  background: #000;              /* 이미지 자체 배경도 검은색 */
+}
+
+/* 이미지 없을 때 자리 유지용 */
+.imagePlaceholder {
+  width: 100%;
+  height: 100%;
+  background: linear-gradient(90deg, #f5f5f5 0%, #eeeeee 50%, #f5f5f5 100%);
+  background-size: 200% 100%;
+  animation: shimmer 1.2s infinite linear;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+/* ====== Breakpoints ====== */
+
+/* 태블릿 (≤1024px) */
+@media (max-width: 1024px) {
+  .post { max-width: 540px; }
+}
+
+/* 작은 태블릿/큰 폰 (≤768px) */
+@media (max-width: 768px) {
+  .post {
+    max-width: 480px;
+    margin: 12px auto 20px;
+    border-radius: 10px;
+  }
+}
+
+/* 모바일 (≤480px) */
+@media (max-width: 480px) {
+  .post {
+    max-width: 100%;
+    margin: 8px 0 16px;          /* 양옆 꽉 차게 */
+    border-radius: 0;            /* 인스타처럼 상하만 구분 */
+    border-left: 0;
+    border-right: 0;
+    box-shadow: none;            /* 모바일에서 그림자 축소 */
+  }
+}
+
+.blurred {
+  filter: blur(8px);   /* 이미지에만 블러 */
+}
+
+.imageContainer {
+  position: relative;  /* 오버레이 배치 위해 relative */
+}
+
+.warningOverlay {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  color: #fff;
+  background: rgba(0, 0, 0, 0.6);
+  padding: 8px 12px;
+  border-radius: 8px;
+  font-size: 14px;
+  text-align: center;
+  z-index: 2;          /* 블러된 이미지 위에 표시 */
+  cursor: pointer;
+}

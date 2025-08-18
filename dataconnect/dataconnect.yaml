@@ -1,0 +1,12 @@
+specVersion: "v1beta"
+serviceId: "insta_clone"
+location: "asia-northeast3"
+schema:
+  source: "./schema"
+  datasource:
+    postgresql:
+      database: "fdcdb"
+      cloudSql:
+        instanceId: "insta_clone-fdc"
+      # schemaValidation: "COMPATIBLE"
+connectorDirs: ["./connector"]

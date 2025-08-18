@@ -1,0 +1,87 @@
+.container {
+  padding: 16px;
+}
+
+.topRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-bottom: 12px;
+}
+
+.leftGroup {
+  display: flex;
+  align-items: center;
+}
+
+.actionButton {
+  padding: 8px;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+.actionButton:focus{
+  outline: none;
+  box-shadow: none;
+}
+
+.heartButton{
+  padding-left: 0;
+}
+
+.actionButton:hover {
+  transform: scale(1.1);
+  /* background-color: #f5f5f5; */
+}
+
+.icon {
+  width: 24px;
+  height: 24px;
+}
+
+.liked {
+  color: #ed4956;
+}
+
+.notLiked {
+  color: #262626;
+}
+
+.likesText {
+  font-weight: 600;
+  font-size: 14px;
+  color: #262626;
+  margin-bottom: 8px;
+  text-align: left; 
+}
+
+.caption {
+  font-size: 14px;
+  line-height: 1.4;
+  text-align: left;
+}
+
+.username {
+  font-weight: 600;
+  margin-right: 8px;
+}
+
+.viewCommentsButton {
+  color: #8e8e8e;
+  font-size: 14px;
+  margin-top: 8px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  padding: 0;
+}
+
+.viewCommentsButton:hover {
+  text-decoration: underline;
+}
