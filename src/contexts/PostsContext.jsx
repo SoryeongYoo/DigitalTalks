@@ -1,5 +1,4 @@
-// 게시물 context
-import React, { createContext, useState, useCallback, useEffect, useContext, useMemo } from 'react';
+import React, { createContext, useState, useCallback, useEffect, useMemo } from 'react';
 import { useAuth } from '../hooks/useAuth.js';
 import { db } from '../firebase.js';
 import { runTransaction, addDoc, collection, doc, serverTimestamp, setDoc, increment, deleteDoc, onSnapshot } from 'firebase/firestore';
@@ -8,19 +7,17 @@ import { getStorage, ref, getDownloadURL, listAll } from 'firebase/storage';
 export const PostsContext = createContext();
 
 export const PostProvider = ({ children }) => {
-  const [posts, setPosts] = useState([]); // 🔹 초기값을 빈 배열로
+  const [posts, setPosts] = useState([]);
+  const [isLoading, setIsLoading] = useState(true); // 로딩 상태 추가
   const { currentUser } = useAuth();
-  const storage = getStorage();
+  
+  // storage 인스턴스를 한 번만 생성
+  const storage = useMemo(() => getStorage(), []);
 
-  // 스토리지에서 모든 이미지 URL 가져오기 함수
+  // 🔥 함수들을 useCallback으로 안정화 (의존성 최소화)
   const getAllImageUrls = useCallback(async () => {
     const possiblePaths = [
-      '', // 루트 디렉토리
-      'images/',
-      'posts/',
-      'uploads/',
-      'media/',
-      'pictures/'
+      '', 'images/', 'posts/', 'uploads/', 'media/', 'pictures/'
     ];
 
     for (const path of possiblePaths) {
@@ -29,24 +26,12 @@ export const PostProvider = ({ children }) => {
         const storageRef = ref(storage, path);
         const result = await listAll(storageRef);
         
-        console.log(`경로 "${path}" 결과:`, {
-          items: result.items.length,
-          prefixes: result.prefixes.length,
-          itemNames: result.items.map(item => item.name)
-        });
-
-        // 서브 폴더가 있으면 출력
-        if (result.prefixes.length > 0) {
-          console.log(`서브 폴더들:`, result.prefixes.map(prefix => prefix.name));
-        }
-        
         if (result.items.length > 0) {
           console.log(`"${path}" 경로에서 ${result.items.length}개 파일 발견!`);
           
           const urlPromises = result.items.map(async (itemRef) => {
             try {
               const url = await getDownloadURL(itemRef);
-              console.log(`URL 생성 성공: ${itemRef.name} -> ${url.substring(0, 50)}...`);
               return url;
             } catch (error) {
               console.error(`이미지 URL 가져오기 실패: ${itemRef.fullPath}`, error);
@@ -68,79 +53,80 @@ export const PostProvider = ({ children }) => {
       }
     }
     
-    console.error('모든 경로에서 이미지를 찾을 수 없습니다.');
+    console.log('스토리지에서 이미지를 찾을 수 없어 더미 이미지 사용');
     return [];
-  }, [storage]);
+  }, [storage]); // storage만 의존성으로
 
-  // 랜덤 이미지 URL 선택 함수
+  // 🔥 더미 이미지 배열을 상수로 분리
+  const DUMMY_IMAGES = useMemo(() => [
+    'https://picsum.photos/400/400?random=1',
+    'https://picsum.photos/400/400?random=2',
+    'https://picsum.photos/400/400?random=3',
+    'https://picsum.photos/400/400?random=4',
+    'https://picsum.photos/400/400?random=5',
+  ], []);
+
   const getRandomImageUrl = useCallback((imageUrls) => {
-    // 스토리지에 이미지가 없으면 더미 이미지 사용
     if (imageUrls.length === 0) {
-      const dummyImages = [
-        'https://picsum.photos/400/400?random=1',
-        'https://picsum.photos/400/400?random=2',
-        'https://picsum.photos/400/400?random=3',
-        'https://picsum.photos/400/400?random=4',
-        'https://picsum.photos/400/400?random=5',
-      ];
-      const randomIndex = Math.floor(Math.random() * dummyImages.length);
-      return dummyImages[randomIndex];
+      const randomIndex = Math.floor(Math.random() * DUMMY_IMAGES.length);
+      return DUMMY_IMAGES[randomIndex];
     }
     
     const randomIndex = Math.floor(Math.random() * imageUrls.length);
     return imageUrls[randomIndex];
-  }, []);
+  }, [DUMMY_IMAGES]); // DUMMY_IMAGES만 의존성으로
 
+  // 🔥 Firebase 구독을 한 번만 실행하도록 최적화
   useEffect(() => {
+    let isMounted = true; // 컴포넌트 마운트 상태 추적
+    
     const colRef = collection(db, 'posts');
+    console.log('[PostsContext] Firebase 구독 시작');
 
-    // 실시간 업데이트를 위해 onSnapshot 사용
     const unsub = onSnapshot(
       colRef,
       async (snap) => {
+        if (!isMounted) return; // 언마운트된 경우 처리 중단
+        
         try {
-          // 먼저 모든 이미지 URL 가져오기
+          console.log('[PostsContext] 데이터 업데이트 받음:', snap.docs.length, '개');
+          
+          // 🔥 이미지 URL은 한 번만 가져오기
           const allImageUrls = await getAllImageUrls();
-          console.log('가져온 이미지 URLs:', allImageUrls);
+          
+          if (!isMounted) return; // 비동기 작업 후 다시 확인
 
-          // firestore에서 데이터 읽기
           const list = await Promise.all(
             snap.docs.map(async (d) => {
               const data = d.data();
               
               let imageUrl = null;
               
-              // 방법 1: 기존 이미지 경로가 있는 경우
               if (data.imagePath) {
                 try {
                   const storageRef = ref(storage, data.imagePath);
                   imageUrl = await getDownloadURL(storageRef);
                 } catch (error) {
                   console.error('기존 이미지 다운로드 실패:', error);
-                  // 실패 시 랜덤 이미지 사용
                   imageUrl = getRandomImageUrl(allImageUrls);
                 }
-              }
-              // 방법 2: 이미지 URL이 직접 저장된 경우
-              else if (data.imageUrl) {
+              } else if (data.imageUrl) {
                 imageUrl = data.imageUrl;
-              }
-              // 방법 3: 이미지가 없거나 실패한 경우 랜덤 이미지 사용
-              else {
+              } else {
                 imageUrl = getRandomImageUrl(allImageUrls);
               }
 
               return {
-                id: d.id, // 문서 ID = postId
+                id: d.id,
                 content: data.content ?? '',
                 image: imageUrl,
-                imageUrl: imageUrl, // 호환성을 위해 두 필드 모두 설정
+                imageUrl: imageUrl,
                 profileImage: data.profileImage || null,
                 commentCount: data.comment_count ?? data.commentCount ?? 0,
                 instagram_id: data.instagram_id ?? '',
-                timeAgo: data.timeAgo || '방금 전', // timeAgo 추가
-                likes: data.likes || 0, // likes 필드 추가
-                isLiked: data.isLiked || false, // isLiked 필드 추가
+                timeAgo: data.timeAgo || '방금 전',
+                likes: data.likes || 0,
+                isLiked: data.isLiked || false,
                 user: {
                   name: data.instagram_id ?? data.user ?? '익명',
                   username: data.instagram_id ?? data.user ?? '익명',
@@ -150,18 +136,34 @@ export const PostProvider = ({ children }) => {
             })
           );
           
-          setPosts(list);
+          if (isMounted) {
+            setPosts(list);
+            setIsLoading(false); // 첫 로딩 완료
+            console.log('[PostsContext] 포스트 설정 완료:', list.length, '개');
+          }
         } catch (error) {
           console.error('게시물 데이터 처리 실패:', error);
+          if (isMounted) {
+            setIsLoading(false);
+          }
         }
       },
-      (err) => console.error('[posts onSnapshot]', err)
+      (err) => {
+        console.error('[posts onSnapshot]', err);
+        if (isMounted) {
+          setIsLoading(false);
+        }
+      }
     );
 
-    return () => unsub();
-  }, [getAllImageUrls, getRandomImageUrl, storage]);
+    return () => {
+      console.log('[PostsContext] Firebase 구독 해제');
+      isMounted = false;
+      unsub();
+    };
+  }, []); // 🔥 의존성 배열 비움으로 한 번만 실행
 
-  // 게시물 좋아요 토글 함수
+  // 🔥 액션 함수들도 안정화
   const toggleLike = useCallback((postId) => {
     setPosts((prevPosts) =>
       prevPosts.map((post) =>
@@ -191,8 +193,6 @@ export const PostProvider = ({ children }) => {
       };
 
       await addDoc(collection(db, 'posts', pid, 'comments'), payload);
-
-      // 문서가 없어도 생성 + commentCount 증가
       await setDoc(
         doc(db, 'posts', pid),
         { comment_count: increment(1) },
@@ -212,14 +212,12 @@ export const PostProvider = ({ children }) => {
 
       try {
         await runTransaction(db, async (tx) => {
-          // 1) 현재 카운트 읽기 (둘 중 있는 값 우선)
           const postSnap = await tx.get(postRef);
           const cur =
             Number(
               (postSnap.exists() && (postSnap.data().comment_count ?? postSnap.data().commentCount))
             ) || 0;
 
-          // 2) 댓글 삭제 + 카운트 동기화(음수 방지)
           const next = Math.max(0, cur - 1);
           tx.delete(commentRef);
           tx.set(postRef, { comment_count: next, commentCount: next }, { merge: true });
@@ -231,15 +229,17 @@ export const PostProvider = ({ children }) => {
     []
   );
 
+  // 🔥 Context value를 useMemo로 안정화
+  const contextValue = useMemo(() => ({
+    posts,
+    isLoading,
+    toggleLike,
+    addComment,
+    deleteComment
+  }), [posts, isLoading, toggleLike, addComment, deleteComment]);
+
   return (
-    <PostsContext.Provider
-      value={{
-        posts,
-        toggleLike,
-        addComment,
-        deleteComment
-      }}
-    >
+    <PostsContext.Provider value={contextValue}>
       {children}
     </PostsContext.Provider>
   );

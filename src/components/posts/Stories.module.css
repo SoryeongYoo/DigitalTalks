@@ -4,6 +4,9 @@
   border-radius: 12px;
   padding: 16px;
   margin-bottom: 16px;
+  /* 고정 높이로 레이아웃 시프트 방지 */
+  min-height: 117px; /* 패딩 16px * 2 + 아바타 69px + 갭 4px + 텍스트 높이 약 12px + 여유 공간 */
+  will-change: transform; /* 렌더링 최적화 */
 }
 
 .scrollContainer {
@@ -12,6 +15,9 @@
   overflow-x: auto;
   scrollbar-width: none;
   -ms-overflow-style: none;
+  /* 고정 높이 설정 */
+  height: 85px; /* 아바타 69px + 갭 4px + 텍스트 12px */
+  align-items: flex-start;
 }
 
 .scrollContainer::-webkit-scrollbar {
@@ -24,6 +30,9 @@
   align-items: center;
   gap: 4px;
   min-width: 64px;
+  /* 고정 높이로 일관성 유지 */
+  height: 85px;
+  flex-shrink: 0;
 }
 
 .avatarWrapper {
@@ -34,11 +43,22 @@
   display: flex;
   align-items: center;
   justify-content: center;
+  transition: transform 0.2s ease;
+  /* 고정 크기 강제 */
+  flex-shrink: 0;
+}
+
+.avatarWrapper:hover {
+  transform: scale(1.05);
 }
 
 .avatarInner {
   border: 2px solid white;
   border-radius: 50%;
+  /* 아바타 크기 고정 */
+  width: 65px;
+  height: 65px;
+  object-fit: cover;
 }
 
 .username {
@@ -49,4 +69,69 @@
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
+  /* 텍스트 높이 고정 */
+  line-height: 12px;
+  height: 12px;
+  flex-shrink: 0;
+}
+
+/* 스켈레톤 로딩 스타일 */
+.skeleton {
+  background: linear-gradient(90deg, #f0f0f0 25%, #e0e0e0 50%, #f0f0f0 75%);
+  background-size: 200% 100%;
+  animation: loading 1.5s infinite;
+}
+
+.skeletonAvatar {
+  width: 65px;
+  height: 65px;
+  border-radius: 50%;
+  background: #f5f5f5;
+}
+
+.skeletonText {
+  height: 12px;
+  background: #f0f0f0;
+  border-radius: 6px;
+  animation: loading 1.5s infinite;
+  width: 64px;
+}
+
+@keyframes loading {
+  0% {
+    background-position: -200% 0;
+  }
+  100% {
+    background-position: 200% 0;
+  }
+}
+
+/* 컨테이너가 한 번만 렌더링되도록 최적화 */
+.container {
+  /* GPU 가속으로 렌더링 최적화 */
+  transform: translateZ(0);
+  backface-visibility: hidden;
+  perspective: 1000px;
+}
+
+/* 로딩 완료 후 부드러운 페이드인 (초기 로딩시에만) */
+.story:not(.skeleton) {
+  animation: none; /* 재렌더링시 애니메이션 제거 */
+}
+
+/* 초기 로딩시에만 fadeIn 애니메이션 적용 */
+.initialLoad .story {
+  opacity: 0;
+  animation: fadeIn 0.3s ease-in-out forwards;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }

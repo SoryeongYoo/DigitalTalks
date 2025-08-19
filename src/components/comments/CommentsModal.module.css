@@ -10,7 +10,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  /* z-index: 50; */
+  z-index: 9999; /* z-index 명시적 설정 */
   padding: 16px;
 }
 
@@ -24,20 +24,23 @@
   overflow: hidden;
   display: flex;
   flex-direction: column;
-  max-height: 90vh;
+  /* max-height를 더 안전하게 설정 */
+  max-height: min(90vh, calc(100vh - 32px));
+  position: relative; /* 자식 요소들의 포지셔닝 기준점 */
 }
 
 /* ===== Header (sticky) ===== */
 .header {
   position: sticky;
   top: 0;
-  z-index: 1;
+  z-index: 10;
   display: flex;
   align-items: center;
   justify-content: center;
   padding: 14px 56px;
   border-bottom: 1px solid #efefef;
   background: #fff;
+  flex-shrink: 0; /* 헤더가 줄어들지 않게 */
 }
 
 .title {
@@ -48,7 +51,6 @@
 /* 닫기 버튼 완전 리셋 + 우상단 고정 */
 .close {
   all: unset;
-  /* 전역 button 스타일 무시 */
   position: absolute;
   right: 12px;
   top: 8px;
@@ -85,7 +87,9 @@
 .list {
   overflow-y: auto;
   padding: 8px 16px 0;
-  max-height: calc(90vh - 140px);
+  flex: 1; /* 사용 가능한 공간을 모두 차지 */
+  /* 명확한 높이 계산 */
+  min-height: 0; /* flexbox에서 overflow 작동하게 */
 }
 
 .empty {
@@ -182,6 +186,7 @@
   align-items: center;
   padding: 12px;
   border-top: 1px solid #efefef;
+  flex-shrink: 0; /* 입력창이 줄어들지 않게 */
 }
 
 .inputWrap {
@@ -190,6 +195,7 @@
   border: 1px solid #e6e6e6;
   border-radius: 9999px;
   padding: 10px 14px;
+  position: relative; /* 분석 결과 표시를 위한 기준점 */
 }
 
 .input {
@@ -198,6 +204,17 @@
   background: transparent;
   outline: none;
   font-size: 14px;
+}
+
+/* 분석 상태 표시 */
+.analysisIndicator,
+.analysisResult {
+  position: absolute;
+  right: 14px;
+  top: 50%;
+  transform: translateY(-50%);
+  font-size: 12px;
+  pointer-events: none;
 }
 
 .postBtn {
@@ -223,12 +240,18 @@
 @media (max-width: 768px) {
   .sheet {
     max-width: 480px;
+    max-height: min(85vh, calc(100vh - 32px));
+  }
+  
+  .backdrop {
+    padding: 12px;
   }
 }
 
 @media (max-width: 480px) {
   .backdrop {
     align-items: flex-end;
+    padding: 0;
   }
 
   .sheet {
@@ -237,9 +260,30 @@
     border-radius: 12px 12px 0 0;
     border-left: 0;
     border-right: 0;
+    /* 모바일에서는 더 많은 공간 활용 */
+    max-height: min(80vh, calc(100vh - env(safe-area-inset-bottom, 0px)));
   }
+}
 
-  .list {
-    max-height: 55vh;
+/* iOS Safari 등에서 100vh 문제 해결 */
+@supports (height: 100dvh) {
+  .backdrop {
+    height: 100dvh;
+  }
+  
+  .sheet {
+    max-height: min(90dvh, calc(100dvh - 32px));
+  }
+  
+  @media (max-width: 768px) {
+    .sheet {
+      max-height: min(85dvh, calc(100dvh - 32px));
+    }
+  }
+  
+  @media (max-width: 480px) {
+    .sheet {
+      max-height: min(80dvh, calc(100dvh - env(safe-area-inset-bottom, 0px)));
+    }
   }
 }

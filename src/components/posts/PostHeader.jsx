@@ -1,11 +1,11 @@
-import React, { useMemo, useEffect, useState } from 'react';
+import React, { useMemo, useEffect, useState, useCallback, useRef } from 'react';
 import { doc, onSnapshot } from "firebase/firestore";
 import { db } from "../../firebase";
 import { Avatar } from '../common/Avatar';
 import styles from './PostHeader.module.css';
 import { FaThermometerFull, FaThermometerHalf, FaThermometerEmpty } from "react-icons/fa";
 
-export const PostHeader = ({ 
+export const PostHeader = React.memo(({ 
   user = {}, 
   timeAgo = null, 
   createdAt = null, 
@@ -13,25 +13,62 @@ export const PostHeader = ({
   onTempChange = null
 }) => {
   const [harmfulTemp, setHarmfulTemp] = useState(36.5);
+  const onTempChangeRef = useRef(onTempChange);
+  const lastTempRef = useRef(36.5);
+
+  // onTempChange 콜백 안정화
+  onTempChangeRef.current = onTempChange;
 
   const username = user.username || '익명';
   const avatarSrc = user.profileImage || undefined;
 
-  // 특정 게시물 실시간 구독
+  // 온도 변경 핸들러 최적화 (불필요한 업데이트 방지)
+  const handleTempChange = useCallback((newTemp) => {
+    const rounded = Math.round(newTemp * 10) / 10; // 소수점 1자리로 반올림
+    
+    // 이전 값과 다를 때만 업데이트
+    if (Math.abs(rounded - lastTempRef.current) > 0.05) {
+      lastTempRef.current = rounded;
+      setHarmfulTemp(rounded);
+      
+      // 부모 컴포넌트에 알림 (디바운스 적용)
+      if (onTempChangeRef.current) {
+        onTempChangeRef.current(rounded);
+      }
+    }
+  }, []);
+
+  // Firebase 구독 최적화
   useEffect(() => {
     if (!postId) return;
 
-    const unsub = onSnapshot(doc(db, "posts", postId), (snap) => {
-      if (snap.exists()) {
-        const temp = snap.data().harmfulTemp ?? 36.5;
-        setHarmfulTemp(temp);
-        if (onTempChange) onTempChange(temp);
+    let timeoutId = null;
+    
+    const unsub = onSnapshot(
+      doc(db, "posts", postId), 
+      (snap) => {
+        if (snap.exists()) {
+          const temp = snap.data().harmfulTemp ?? 36.5;
+          
+          // 디바운스 적용 (100ms 내 연속 업데이트 방지)
+          if (timeoutId) clearTimeout(timeoutId);
+          timeoutId = setTimeout(() => {
+            handleTempChange(temp);
+          }, 100);
+        }
+      },
+      (error) => {
+        console.error(`PostHeader Firebase error for post ${postId}:`, error);
       }
-    });
+    );
 
-    return () => unsub();
-  }, [postId, onTempChange]);
+    return () => {
+      unsub();
+      if (timeoutId) clearTimeout(timeoutId);
+    };
+  }, [postId, handleTempChange]);
 
+  // 시간 표시 메모이제이션 강화
   const displayTime = useMemo(() => {
     if (createdAt instanceof Date) {
       const diff = Date.now() - createdAt.getTime();
@@ -47,11 +84,12 @@ export const PostHeader = ({
     return null;
   }, [createdAt, timeAgo]);
 
-  const ThermometerIcon = () => {
+  // 온도계 아이콘 메모이제이션
+  const ThermometerIcon = useMemo(() => {
     if (harmfulTemp < 36.5) return <FaThermometerEmpty size={20} color="green" />;
     if (harmfulTemp < 38) return <FaThermometerHalf size={20} color="orange" />;
     return <FaThermometerFull size={20} color="red" />;
-  };
+  }, [harmfulTemp]);
 
   return (
     <div className={styles.header}>
@@ -68,13 +106,12 @@ export const PostHeader = ({
         </div>
       </div>
 
-      {/* 🔥 유해 온도 표시 */}
+      {/* 온도 표시 최적화 */}
       <div className={styles.temperature}>
-        <ThermometerIcon />
+        {ThermometerIcon}
         <span>{harmfulTemp.toFixed(1)}°C</span>
       </div>
 
-      {/* ✅ 더보기 버튼 복구 */}
       <button className={styles.moreButton} aria-label="더보기">
         <svg fill="currentColor" viewBox="0 0 20 20" width="20" height="20">
           <path d="M10 6a2 2 0 110-4 2 2 0 010 4zM10 12a2 2 0 110-4 2 2 0 010 4zM10 18a2 2 0 110-4 2 2 0 010 4z" />
@@ -82,4 +119,6 @@ export const PostHeader = ({
       </button>
     </div>
   );
-};
+});
+
+PostHeader.displayName = 'PostHeader';
